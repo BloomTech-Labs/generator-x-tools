@@ -2,6 +2,13 @@
 
 The X Tools provide various functions used through out the org.
 
+## Install
+
+1. `npm install @lambdalabs/labs`
+2. `git clone https://github.com/Lambda-School-Labs/generator-x-tools.git`
+3. `cd generator-x-tools`
+4. `labs ./generators/fork-repo`
+
 ## Fork-repo
 
 "Forks" a repo within the same org with a new name.
