@@ -9,7 +9,20 @@ The X Tools provide various functions used through out the org.
 **Example Usage**
 
 ``` bash
-labs ./generators/fork-repo
+Usage:
+  labs ./generators/fork-repo [options]
+
+Options:
+  -h,   --help           # Print the generator's options and usage
+        --skip-cache     # Do not remember prompt answers               Default: false
+        --skip-install   # Do not automatically install dependencies    Default: false
+        --force-install  # Fail on install dependencies error           Default: false
+        --ask-answered   # Show prompts for already configured options  Default: false
+  -u,   --url            # URL of git repo to clone (HTTPS git url)
+  -p,   --product        # name of the product
+  -t,   --teams          # team count
+  -l,   --cohort         # labs cohort number (FT32, PT18)
+  -r,   --purpose        # repo purpose
 ```
 
 ### Prompts
@@ -27,7 +40,16 @@ Deletes a repo from the github Labs org.
 **Example Usage**
 
 ``` bash
-labs ./generators/remove-repo
+Usage:
+  labs ./generators/remove-repo [options]
+
+Options:
+  -h,   --help           # Print the generator's options and usage
+        --skip-cache     # Do not remember prompt answers               Default: false
+        --skip-install   # Do not automatically install dependencies    Default: false
+        --force-install  # Fail on install dependencies error           Default: false
+        --ask-answered   # Show prompts for already configured options  Default: false
+  -p,   --repo           # name of the repo
 ```
 
 ### Prompts
