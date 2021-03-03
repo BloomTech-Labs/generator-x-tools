@@ -1,10 +1,14 @@
-const { BaseGenerator, klr, octokit, _inspect } = require("../gh-base");
+const {
+  BaseGenerator,
+  klr,
+  octokit,
+  _inspect,
+  ghConfig } = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
     super(args, opts);
     this.initialData = {};
-    this.githubOwner = "Lambda-School-Labs";
 
     this._makePromptOption(
       'repo',
@@ -48,7 +52,7 @@ module.exports = class extends BaseGenerator {
   writing() {
     (async () => {
       const repo = await octokit.repos.delete({
-        owner: this.githubOwner,
+        owner: ghConfig.defaultRepoOpts.org,
         repo: this.data.repo,
       });
       // _inspect(repo);

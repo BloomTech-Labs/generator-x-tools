@@ -20,15 +20,23 @@ const opts = {
 if (process.env.GHDEBUG == 'true') { opts.log = console; }
 exports.octokit = new Octokit(opts);
 
-exports._inspect = (obj) => {
+exports._inspect = (obj, level = 0) => {
+  var spaces = "";
+  for (var i = 0; i < level; i++) { spaces += " "; }
   for (const prop in obj) {
     if (obj.hasOwnProperty(prop)) {
-      console.log(`${exports.klr.bold(prop)}: ${obj[prop]}`)
+      if (typeof obj[prop] === 'object') {
+        console.log(spaces + exports.klr.bold(prop) + ':');
+        this._inspect(obj[prop], level + 2);
+      } else {
+        console.log(`${spaces}${exports.klr.bold(prop)}: ${obj[prop]}`)
+      }
     }
   }
 }
 
 exports.ghConfig = {
+  org: ghOrg,
   defaultRepoOpts: {
     org: ghOrg,
     private: false,

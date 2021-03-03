@@ -62,3 +62,30 @@ Options:
 ### Prompts
 
 - What is the name of the repo?
+
+## make-teams
+
+Create N teams for a product
+
+**Example Usage**
+
+``` bash
+Usage:
+  labs ./generators/make-teams [options]
+
+Options:
+  -h,   --help           # Print the generator's options and usage
+        --skip-cache     # Do not remember prompt answers               Default: false
+        --skip-install   # Do not automatically install dependencies    Default: false
+        --force-install  # Fail on install dependencies error           Default: false
+        --ask-answered   # Show prompts for already configured options  Default: false
+  -p,   --product        # name of the product
+  -t,   --teams          # team count
+  -l,   --cohort         # labs cohort number (FT32, PT18)
+```
+
+### Prompts
+
+- What is the name of the product or abbreviated name?
+- How many teams for the product?
+- What is the Labs cohort? (FT32, PT18)
