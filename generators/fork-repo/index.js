@@ -164,6 +164,11 @@ module.exports = class extends BaseGenerator {
               description: `${this.data.product} project for Labs${this.data.cohort}`,
             })
         );
+        octokit.repos.replaceAllTopics({
+          owner: ghConfig.defaultRepoOpts.org,
+          repo: name,
+          names: [`labs${this.data.cohort.toLowerCase()}`],
+        });
         this.newRepos[team].repo = repo;
         this.log(`================\nCreated the new github repo ${name}.`);
         // _inspect(repo.data);
@@ -174,6 +179,26 @@ module.exports = class extends BaseGenerator {
         const repoUrl = `https://github.com/${ghConfig.defaultRepoOpts.org}/${name}.git`;
         this.spawnCommandSync('git', ['remote', 'add', remoteName, repoUrl]);
         this.spawnCommandSync('git', ['push', remoteName, 'main']);
+
+        octokit.request("PUT /repos/{owner}/{repo}/branches/{branch}/protection", {
+          mediaType: {
+            previews: ["symmetra", "loki", "luke-cage"],
+          },
+          owner: ghConfig.defaultRepoOpts.org,
+          repo: name,
+          branch: 'main',
+          enabled: true,
+          enforce_admins: false,
+          required_pull_request_reviews: {
+            dismiss_stale_reviews: true,
+            required_approving_review_count: 2,
+          },
+          restrictions: null,
+          required_status_checks: {
+            strict: true,
+            contexts: ['Test and publish test coverage']
+          }
+        });
       }
       process.chdir('..');
       this.spawnCommandSync('rm', ['-rf', this.repoName]);
