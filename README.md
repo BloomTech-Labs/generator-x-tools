@@ -2,12 +2,14 @@
 
 The X Tools provide various functions used through out the org.
 
-## Install
+## Setup
 
-1. `npm install @lambdalabs/labs`
-2. `git clone https://github.com/Lambda-School-Labs/generator-x-tools.git`
-3. `cd generator-x-tools`
-4. `labs ./generators/fork-repo`
+1. `cp .env.sample .env`
+2. set the GITHUBKEY enviornment variable with your github personal key.
+3. `npm install @lambdalabs/labs`
+4. `git clone https://github.com/Lambda-School-Labs/generator-x-tools.git`
+5. `cd generator-x-tools`
+6. `labs ./generators/fork-repo`
 
 ## Fork-repo
 
