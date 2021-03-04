@@ -35,6 +35,10 @@ exports._inspect = (obj, level = 0) => {
   }
 }
 
+exports._makeConfig = (config, custom) => {
+  return Object.assign({}, config, custom)
+}
+
 exports.ghConfig = {
   org: ghOrg,
   defaultRepoOpts: {

@@ -91,3 +91,57 @@ Options:
 - What is the name of the product or abbreviated name?
 - How many teams for the product?
 - What is the Labs cohort? (FT32, PT18)
+
+## remove-teams
+
+Delete teams from labs org
+
+**Example Usage**
+
+``` bash
+Usage:
+  labs remove-teams [options]
+
+Options:
+  -h,   --help           # Print the generator's options and usage
+        --skip-cache     # Do not remember prompt answers                                      Default: false
+        --skip-install   # Do not automatically install dependencies                           Default: false
+        --force-install  # Fail on install dependencies error                                  Default: false
+        --ask-answered   # Show prompts for already configured options                         Default: false
+  -t,   --teamSlugs      # comma list of team slugs? (pt17-cityspire-c,pt17-merchantmarket-a)
+```
+
+### Prompts
+
+- What are the team slugs? (pt17-cityspire-c,pt17-merchantmarket-a)
+
+remove-teams [options]
+
+## update-teams
+
+Update team with members, maintainers, and repos
+
+**Example Usage**
+
+``` bash
+Usage:
+  labs ./generators/update-teams [options]
+
+Options:
+  -h,   --help           # Print the generator's options and usage
+        --skip-cache     # Do not remember prompt answers                              Default: false
+        --skip-install   # Do not automatically install dependencies                   Default: false
+        --force-install  # Fail on install dependencies error                          Default: false
+        --ask-answered   # Show prompts for already configured options                 Default: false
+  -t,   --slug           # team slug (pt17-city-spire-a)
+  -b,   --members        # comma list of members github handles (handle1,handle2)
+  -m,   --maintainers    # comma list of maintainers github handles (handle1,handle2)
+  -r,   --repos          # comma list of repo names? (repo1,repo2)
+```
+
+### Prompts
+
+- What is the team slug? (pt17-city-spire-a)
+- Comma list of members github handles? (handle1,handle2)
+- Comma list of maintainers github handles? (handle1,handle2)
+- Comma list of repo names? (repo1,repo2)
