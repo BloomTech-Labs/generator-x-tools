@@ -17,6 +17,7 @@
   "dependencies": {
     "@lambdalabs/base-generator": "^1.0.3",
     "@octokit/rest": "^18.3.1",
+    "heroku-client": "^3.1.0",
     "kleur": "^4.1.1"
   },
   "devDependencies": {

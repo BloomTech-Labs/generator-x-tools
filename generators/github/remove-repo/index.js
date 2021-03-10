@@ -3,7 +3,7 @@ const {
   klr,
   octokit,
   _inspect,
-  ghConfig } = require("../gh-base");
+  Github } = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
@@ -52,7 +52,7 @@ module.exports = class extends BaseGenerator {
   writing() {
     (async () => {
       const repo = await octokit.repos.delete({
-        owner: ghConfig.defaultRepoOpts.org,
+        owner: Github.org,
         repo: this.data.repo,
       });
       // _inspect(repo);

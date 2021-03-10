@@ -4,7 +4,7 @@ const {
   octokit,
   _inspect,
   _makeConfig,
-  ghConfig } = require("../gh-base");
+  Github } = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
@@ -78,28 +78,35 @@ module.exports = class extends BaseGenerator {
 
   prompting() {
     return this.prompt(this.prompts).then((props) => {
-      props.members = props.members.split(',');
-      props.maintainers = props.maintainers.split(',');
-      props.repos = props.repos.split(',');
+      if(props.members && props.members != '-') { props.members = props.members.split(','); } else { props.members = []; }
+      if(props.maintainers && props.maintainers != '-') { props.maintainers = props.maintainers.split(','); } else { props.maintainers = []; }
+      if(props.repos && props.props != '-') { props.repos = props.repos.split(','); } else { props.repos = []; }
       this.answers = props;
       this.data = Object.assign({}, this.initialData, this.answers);
     });
   }
 
   configuring() {
+    if(this.data.t) {
+      this.data.slug = this.data.t;
+    }
+    if(this.data.r && this.data.r != '-') {
+      this.data.repos = this.data.r.split(',');
+    }
+    if(this.data.b && this.data.b != '-') {
+      this.data.members = this.data.m.split(',');
+    }
+    if(this.data.m && this.data.m != '-') {
+      this.data.maintainers = this.data.m.split(',');
+    }
     this.teamConfig = {
-      org: ghConfig.org,
+      org: Github.org,
       team_slug: this.data.slug,
     };
-    // get team
-    (async () => {
-      const team = await octokit.teams.getByName(this.teamConfig);
-      // _inspect(team)
-      this.team = team.data;
-    })();
   }
 
   writing() {
+    this.log(`[== Updating Team ${this.data.slug}`);
     (async () => {
       // add members
       for (var member of this.data.members) {
@@ -120,7 +127,7 @@ module.exports = class extends BaseGenerator {
         octokit.teams.addOrUpdateRepoPermissionsInOrg(
           _makeConfig(this.teamConfig, {
             repo,
-            owner: ghConfig.org,
+            owner: Github.org,
             permission: 'push'
           })
         );
@@ -130,3 +137,4 @@ module.exports = class extends BaseGenerator {
   }
 }
 // https://github.com/Lambda-School-Labs/LabsPT15-cityspire-g-fe.git
+// 

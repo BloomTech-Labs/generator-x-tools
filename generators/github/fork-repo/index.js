@@ -4,16 +4,13 @@ const {
   klr,
   octokit,
   _inspect,
-  ghConfig } = require("../gh-base");
+  _exit,
+  Github } = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
     super(args, opts);
     this.initialData = {};
-    this.exit = (code, msg) => {
-      console.error(`Error: ${msg}`);
-      process.exit(code);
-    }
     this.newRepos = {};
 
     this._makePromptOption(
@@ -127,20 +124,14 @@ module.exports = class extends BaseGenerator {
     if (!this.data.url) { this.exit(9, "missing repo url"); }
     const finds = this.data.url.match(/\/([\w-]*)\.git/i);
     // this.log(`finds: ${finds}`);
-    if (!finds[1]) { this.exit(9, "invalid repo url"); }
-    if (fs.existsSync(finds[1])) { this.exit(9, "Clone already exists"); }
+    if (!finds[1]) { _exit(9, "invalid repo url"); }
+    if (fs.existsSync(finds[1])) { _exit(9, "Clone already exists"); }
     this.repoName = finds[1];
 
     this.log(`Configuring "Fork" for repo ${klr.bold(this.repoName)}`);
-    // _inspect(this.data);
-    const repoBaseName = this.data.cohort.toUpperCase() + "_" + this.data.product;
     for (var i = 0; i < this.data.teams; i++) {
       const letter = String.fromCharCode(97 + i)
-      this.newRepos[letter] = {};
-    }
-    for (const team in this.newRepos) {
-      const name = `${repoBaseName}-${team}-${this.data.purpose}`
-      this.newRepos[team].name = name;
+      this.newRepos[letter] = { name: Github.makeRepoName(this.data.cohort, this.data.product, letter, this.data.purpose) };
     }
   }
 
@@ -155,17 +146,18 @@ module.exports = class extends BaseGenerator {
     (async () => {
       for (var team in this.newRepos) {
         const name = this.newRepos[team].name;
+        const defaultOpts = Github.config.defaultRepoOpts;
         // create new repo
         const repo = await octokit.repos.createInOrg(
           Object.assign({},
-            ghConfig.defaultRepoOpts,
+            defaultOpts,
             {
               name,
               description: `${this.data.product} project for Labs${this.data.cohort}`,
             })
         );
         octokit.repos.replaceAllTopics({
-          owner: ghConfig.defaultRepoOpts.org,
+          owner: Github.org,
           repo: name,
           names: [`labs${this.data.cohort.toLowerCase()}`],
         });
@@ -176,7 +168,7 @@ module.exports = class extends BaseGenerator {
         // fork to new repos
         const remoteName = `team${team.toUpperCase()}`
         this.log(`================\n"Forking" to new repo for ${name}.\n`);
-        const repoUrl = `https://github.com/${ghConfig.defaultRepoOpts.org}/${name}.git`;
+        const repoUrl = `https://github.com/${Github.org}/${name}.git`;
         this.spawnCommandSync('git', ['remote', 'add', remoteName, repoUrl]);
         this.spawnCommandSync('git', ['push', remoteName, 'main']);
 
@@ -184,7 +176,7 @@ module.exports = class extends BaseGenerator {
           mediaType: {
             previews: ["symmetra", "loki", "luke-cage"],
           },
-          owner: ghConfig.defaultRepoOpts.org,
+          owner: Github.org,
           repo: name,
           branch: 'main',
           enabled: true,
@@ -202,7 +194,7 @@ module.exports = class extends BaseGenerator {
       }
       process.chdir('..');
       this.spawnCommandSync('rm', ['-rf', this.repoName]);
-      this.log(`================\nRemove cloned repo ${this.repoName}.\n`);
+      this.log(`================\nRemoved cloned repo ${this.repoName}.\n`);
     })();
   }
 

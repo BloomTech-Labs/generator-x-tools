@@ -3,7 +3,8 @@ const {
   klr,
   octokit,
   _inspect,
-  ghConfig } = require("../gh-base");
+  Github, 
+  _makeConfig} = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
@@ -91,10 +92,9 @@ module.exports = class extends BaseGenerator {
         const name = this.newTeams[team].name;
         // create new team
         const teamObj = await octokit.teams.create(
-          Object.assign({},
-            {
+          _makeConfig({
               name,
-              org: ghConfig.org,
+              org: Github.org,
               privacy: 'closed',
               description: `Labs ${this.data.cohort}, team ${team.toUpperCase()} for project ${this.data.product}`,
             })

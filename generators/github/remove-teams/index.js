@@ -4,7 +4,7 @@ const {
   octokit,
   _inspect,
   _makeConfig,
-  ghConfig } = require("../gh-base");
+  Github } = require("../gh-base");
 
 module.exports = class extends BaseGenerator {
   constructor(args, opts) {
@@ -39,7 +39,9 @@ module.exports = class extends BaseGenerator {
 
   prompting() {
     return this.prompt(this.prompts).then((props) => {
-      props.teamSlugs = props.teamSlugs.split(',');
+      if(props.teamSlugs) {
+        props.teamSlugs = props.teamSlugs.split(',');
+      }
       this.answers = props;
       this.data = Object.assign({}, this.initialData, this.answers);
     });
@@ -47,22 +49,44 @@ module.exports = class extends BaseGenerator {
 
   configuring() {
     this.teamConfig = {
-      org: ghConfig.org,
+      org: Github.org,
     };
+    if(this.data.t) {
+      this.data.teamSlugs = this.data.t.split(',');
+    }
   }
 
   installing() {
-    this.log(this.data.teamSlugs)
     this.log('================\nLets delete some teams.');
     (async () => {
       for (var team of this.data.teamSlugs) {
-        // delete team
-        octokit.teams.deleteInOrg({
-          org: ghConfig.org,
+        const conf = {
+          org: Github.org,
           team_slug: team,
-        });
-        this.log(`[======== Deleted team ${team}.`);
+        }
+        // delete members
+        await this._deleteMembers(conf);
+        // delete team
+        await octokit.teams.deleteInOrg(conf);
+        this.log(klr.red(`[======== Deleted team ${klr.bold(team)}`));
       }
     })();
+  }
+
+  async _deleteMembers(conf) {
+    const members = await octokit.teams.listMembersInOrg(conf);
+    const logins = [];
+    for(let mem of members.data) {
+      const memConf = _makeConfig({username: mem.login}, conf);
+      const role = await octokit.teams.getMembershipForUserInOrg(memConf);
+      if(role.data.role == 'member') {
+        logins.push(mem.login)
+      }
+    }
+    for(let handle of logins) {
+      const opts = _makeConfig({username: handle}, this.teamConfig);
+      await octokit.orgs.removeMembershipForUser(opts);
+      this.log(`removed user: ${handle}`)
+    }
   }
 }
