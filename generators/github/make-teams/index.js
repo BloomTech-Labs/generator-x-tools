@@ -1,73 +1,31 @@
-const {
-  BaseGenerator,
-  klr,
-  octokit,
-  _inspect,
-  Github, 
-  _makeConfig} = require("../gh-base");
+const githubGenerator = require("../gh-base");
 
-module.exports = class extends BaseGenerator {
+module.exports = class extends githubGenerator {
   constructor(args, opts) {
     super(args, opts);
     this.initialData = {};
     this.newTeams = {};
 
-    this._makePromptOption(
-      'product',
-      {
-        type: 'input',
-        message: 'What is the name of the product or abbreviated name?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'p',
-        desc: 'name of the product',
-      }
-    );
-    this._makePromptOption(
-      'teams',
-      {
-        type: 'number',
-        message: 'How many teams for the product?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 't',
-        type: 'Number',
-        desc: 'team count',
-      }
-    );
-    this._makePromptOption(
-      'cohort',
-      {
-        type: 'input',
-        message: 'What is the Labs cohort? (FT32, PT18)',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'l',
-        desc: 'labs cohort number (FT32, PT18)',
-      }
-    );
+    this._makeProductPromptOpt();
+    this._makeCohortPromptOpt();
+    this._makeTeamCountPromptOpt();
+
   }
 
   initializing() {
     this.log(
-      `Welcome to the ${klr.red('Labs')} ${klr.bold(
+      `Welcome to the ${this.klr.red('Labs')} ${this.klr.bold(
         'Team Maker'
       )}!\nLets get started.`
     );
     this._removePrompts();
-    this.initialData = Object.assign({}, this.initialData, this.options);
+    this.initialData = this._makeConfig(this.initialData, this.options);
   }
 
   prompting() {
     return this.prompt(this.prompts).then((props) => {
       this.answers = props;
-      this.data = Object.assign({}, this.initialData, this.answers);
+      this.data = this._makeConfig(this.initialData, this.answers);
     });
   }
 
@@ -75,7 +33,7 @@ module.exports = class extends BaseGenerator {
     for (var i = 0; i < this.data.teams; i++) {
       const letter = String.fromCharCode(97 + i)
       this.newTeams[letter] = {
-        name: `${this.data.cohort} - ${this.data.product} - ${letter}`
+        name: this._makeTeamName(this.data.cohort, this.data.product, letter)
       };
     }
     // _inspect(this.newTeams);
@@ -91,16 +49,15 @@ module.exports = class extends BaseGenerator {
       for (var team in this.newTeams) {
         const name = this.newTeams[team].name;
         // create new team
-        const teamObj = await octokit.teams.create(
-          _makeConfig({
+        const teamObj = await this.octokit.teams.create(
+          this._makeConfig({
               name,
-              org: Github.org,
+              org: this.org,
               privacy: 'closed',
               description: `Labs ${this.data.cohort}, team ${team.toUpperCase()} for project ${this.data.product}`,
             })
         );
         this.log(`================\nCreated the new github team ${name} (slug: ${teamObj.data.slug}).`);
-        // _inspect(teamObj);
       }
     })();
   }

@@ -1,71 +1,15 @@
-const {
-  BaseGenerator,
-  fs,
-  klr,
-  octokit,
-  _inspect,
-  _exit,
-  Github } = require("../gh-base");
+const githubGenerator = require("../gh-base");
 
-module.exports = class extends BaseGenerator {
+module.exports = class extends githubGenerator {
   constructor(args, opts) {
     super(args, opts);
     this.initialData = {};
     this.newRepos = {};
 
-    this._makePromptOption(
-      'url',
-      {
-        type: 'input',
-        message: 'What is the URL of github repo to clone (HTTPS git url)?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'u',
-        desc: 'URL of git repo to clone (HTTPS git url)',
-      }
-    );
-    this._makePromptOption(
-      'product',
-      {
-        type: 'input',
-        message: 'What is the name of the product or abbreviated name?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'p',
-        desc: 'name of the product',
-      }
-    );
-    this._makePromptOption(
-      'teams',
-      {
-        type: 'number',
-        message: 'How many teams for the product?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 't',
-        type: 'Number',
-        desc: 'team count',
-      }
-    );
-    this._makePromptOption(
-      'cohort',
-      {
-        type: 'input',
-        message: 'What is the Labs cohort? (FT32, PT18)',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'l',
-        desc: 'labs cohort number (FT32, PT18)',
-      }
-    );
+    this._makeRepoUrlPromptOpt();
+    this._makeProductPromptOpt();
+    this._makeTeamCountPromptOpt();
+    this._makeCohortPromptOpt();
     this._makePromptOption(
       'purpose',
       {
@@ -102,43 +46,43 @@ module.exports = class extends BaseGenerator {
 
   initializing() {
     this.log(
-      `Welcome to the ${klr.red('Labs')} ${klr.bold(
+      `Welcome to the ${this.klr.red('Labs')} ${this.klr.bold(
         'Repo Forker'
       )}!\nLets get started.`
     );
     this._removePrompts();
-    this.initialData = Object.assign({}, this.initialData, this.options);
+    this.initialData = this._makeConfig(this.initialData, this.options);
   }
 
   prompting() {
     return this.prompt(this.prompts).then((props) => {
       if (props.product) { props.product = props.product.replace(/\s/g, ''); }
       this.answers = props;
-      this.data = Object.assign({}, this.initialData, this.answers);
+      this.data = this._makeConfig(this.initialData, this.answers);
     });
   }
 
   configuring() {
     // validate the url
     // this.log(`url: ${this.data.url}`);
-    if (!this.data.url) { this.exit(9, "missing repo url"); }
-    const finds = this.data.url.match(/\/([\w-]*)\.git/i);
+    if (!this.data.repoUrl) { this.exit(9, "missing repo url"); }
+    const finds = this.data.repoUrl.match(/\/([\w-]*)\.git/i);
     // this.log(`finds: ${finds}`);
     if (!finds[1]) { _exit(9, "invalid repo url"); }
     if (fs.existsSync(finds[1])) { _exit(9, "Clone already exists"); }
     this.repoName = finds[1];
 
-    this.log(`Configuring "Fork" for repo ${klr.bold(this.repoName)}`);
-    for (var i = 0; i < this.data.teams; i++) {
+    this.log(`Configuring "Fork" for repo ${this.klr.bold(this.repoName)}`);
+    for (var i = 0; i < this.data.teamCount; i++) {
       const letter = String.fromCharCode(97 + i)
-      this.newRepos[letter] = { name: Github.makeRepoName(this.data.cohort, this.data.product, letter, this.data.purpose) };
+      this.newRepos[letter] = { name: this._makeRepoName(this.data.cohort, this.data.product, letter, this.data.purpose) };
     }
   }
 
   writing() {
     // clone original repo
-    this.log(`================\nClone the repo ${this.data.url}.\n`);
-    this.spawnCommandSync('git', ['clone', this.data.url]);
+    this.log(`================\nClone the repo ${this.data.repoUrl}.\n`);
+    this.spawnCommandSync('git', ['clone', this.data.repoUrl]);
     process.chdir(this.repoName);
   }
 
@@ -146,18 +90,17 @@ module.exports = class extends BaseGenerator {
     (async () => {
       for (var team in this.newRepos) {
         const name = this.newRepos[team].name;
-        const defaultOpts = Github.config.defaultRepoOpts;
+        const defaultOpts = this.config.defaultRepoOpts;
         // create new repo
-        const repo = await octokit.repos.createInOrg(
-          Object.assign({},
-            defaultOpts,
+        const repo = await this.octokit.repos.createInOrg(
+          this._makeConfig(defaultOpts,
             {
               name,
               description: `${this.data.product} project for Labs${this.data.cohort}`,
             })
         );
-        octokit.repos.replaceAllTopics({
-          owner: Github.org,
+        this.octokit.repos.replaceAllTopics({
+          owner: this.org,
           repo: name,
           names: [`labs${this.data.cohort.toLowerCase()}`],
         });
@@ -168,15 +111,15 @@ module.exports = class extends BaseGenerator {
         // fork to new repos
         const remoteName = `team${team.toUpperCase()}`
         this.log(`================\n"Forking" to new repo for ${name}.\n`);
-        const repoUrl = `https://github.com/${Github.org}/${name}.git`;
+        const repoUrl = `https://github.com/${this.org}/${name}.git`;
         this.spawnCommandSync('git', ['remote', 'add', remoteName, repoUrl]);
         this.spawnCommandSync('git', ['push', remoteName, 'main']);
 
-        octokit.request("PUT /repos/{owner}/{repo}/branches/{branch}/protection", {
+        this.octokit.request("PUT /repos/{owner}/{repo}/branches/{branch}/protection", {
           mediaType: {
             previews: ["symmetra", "loki", "luke-cage"],
           },
-          owner: Github.org,
+          owner: this.org,
           repo: name,
           branch: 'main',
           enabled: true,
