@@ -2,6 +2,8 @@ const LabsGenerator = require("../labs-generator");
 const HerokuClient = require('heroku-client');
 
 module.exports = class extends LabsGenerator {
+  team = "lambda-school-labs";
+
   constructor(args, opts) {
     super(args, opts);
     const hkOpts = { 

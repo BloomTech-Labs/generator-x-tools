@@ -7,16 +7,16 @@ module.exports = class extends HerokuGenerator {
     this.newApps = {};
 
     this._makePromptOption(
-      'apps',
+      'members',
       {
         type: 'input',
-        message: 'What are the app names? (app-name-1,app-name-2)',
+        message: 'What are the members emails? (email1,email2)',
         store: true,
       },
       {
         type: String,
-        alias: 't',
-        desc: 'comma list of app names? (app-name-1,app-name-2)',
+        alias: 'm',
+        desc: 'comma list of members emails? (email1,email2)',
       }
     );
   }
@@ -24,19 +24,20 @@ module.exports = class extends HerokuGenerator {
   initializing() {
     this.log(
       `Welcome to the ${this.klr.red('Labs')} ${this.klr.bold(
-        'BE App Remover'
+        'Heroku Member Remover'
       )}!\nLets get started.`
     );
     this._removePrompts();
+    if (this.options.m) {
+      this.options.members = this.options.m.split(',');
+    }
     this.initialData = this._makeConfig(this.initialData, this.options);
   }
 
   prompting() {
     return this.prompt(this.prompts).then((props) => {
-      if (props.apps == '-') {
-        props.apps = [];
-      } else {
-        props.apps = props.apps.split(',');
+      if (props.members) {
+        props.members = props.members.split(',');
       }
       this.answers = props;
       this.data = this._makeConfig(this.initialData, this.answers);
@@ -46,15 +47,21 @@ module.exports = class extends HerokuGenerator {
   configuring() {}
 
   installing() {
-    this.log('================\nLets remove some apps from Heroku.');
+    this.log('================\nLets remove some members from Heroku.');
     (async () => {
-        try {
-            for (var app of this.data.apps) {
-              await this.hkClient.delete(`/apps/${app}`);
-            }
+        for (var email of this.data.members) {
+          try {
+            const obj = await this.hkClient.delete(`/teams/${this.team}/members/${email}`);
+            this.log(`Removed member ${email}`);
           } catch(err) {
-            this.log(err);
+            this.log(err.message);
           }
+        }
     })();
   }
 };
+
+/*
+labs ./generators/heroku/remove-members -m=
+
+*/

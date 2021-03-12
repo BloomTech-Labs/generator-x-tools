@@ -92,7 +92,7 @@ module.exports = class extends HerokuGenerator {
       body: {
         stack: 'heroku-20',
         region: 'us',
-        team: 'lambda-school-labs',
+        team: this.team,
         name: ''
       }
     };
