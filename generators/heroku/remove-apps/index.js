@@ -50,11 +50,24 @@ module.exports = class extends HerokuGenerator {
     (async () => {
         try {
             for (var app of this.data.apps) {
+              this.log(`${this.klr.red("Removing")} ${app}`);
+              await this._deleteMembers({app, team: this.team})
               await this.hkClient.delete(`/apps/${app}`);
+              this.log(`  > ${app} removed`);
             }
           } catch(err) {
             this.log(err);
           }
     })();
+  }
+
+  async _deleteMembers(conf) {
+    const collaborators = await this.hkClient.get(`/apps/${conf.app}/collaborators`);
+    for (const member of collaborators) {
+      if(member.id != "4a1fc63b-129b-411f-a692-c93b50b0caf4") {
+        const obj = await this.hkClient.delete(`/teams/${this.team}/members/${member.user.email}`);
+        this.log(`  - removed ${member.user.email}`);
+      }
+    }
   }
 };
