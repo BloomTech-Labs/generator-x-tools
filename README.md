@@ -4,11 +4,11 @@ The X Tools provide various functions used through out the org.
 
 ## Setup
 
-1. `cp .env.sample .env`
-2. set the GITHUBKEY enviornment variable with your github personal key.
-3. set the HEROKU env variable with your personal key
-4. `npm install @lambdalabs/labs`
-5. `git clone https://github.com/Lambda-School-Labs/generator-x-tools.git`
+1. `git clone https://github.com/Lambda-School-Labs/generator-x-tools.git`
+2. `cp .env.sample .env`
+3. set the GITHUBKEY enviornment variable with your github personal key.
+4. set the HEROKU_API_TOKEN env variable with your personal key
+5. `npm install -g @lambdalabs/labs`
 6. `cd generator-x-tools`
 7. `labs ./generators/fork-repo`
 
