@@ -8,9 +8,12 @@ The X Tools provide various functions used through out the org.
 2. `cp .env.sample .env`
 3. set the GITHUBKEY enviornment variable with your github personal key.
 4. set the HEROKU_API_TOKEN env variable with your personal key
-5. `npm install -g @lambdalabs/labs`
-6. `cd generator-x-tools`
-7. `labs ./generators/fork-repo`
+5. `npm i`
+6. `npm install -g @lambdalabs/labs`
+7. `cd generator-x-tools`
+8. `labs ./generators/github/fork-repo`
+
+Each folder in the `github` and `heroku` folders is a tool.
 
 ## Fork-repo
 
