@@ -12,7 +12,7 @@ module.exports = class extends githubGenerator {
     this.log(
       `Welcome to the ${this.klr.red('Labs')} ${this.klr.bold(
         'Repo Remover'
-      )}!\nLets get started.`
+      )}!\n\nThis tool will delete a repo from github.\n`
     );
     this._removePrompts();
     this.initialData = this._makeConfig(this.initialData, this.options);

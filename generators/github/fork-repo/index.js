@@ -90,7 +90,7 @@ module.exports = class extends githubGenerator {
     (async () => {
       for (var team in this.newRepos) {
         const name = this.newRepos[team].name;
-        const defaultOpts = this.config.defaultRepoOpts;
+        const defaultOpts = this.conf.defaultRepoOpts;
         // create new repo
         const repo = await this.octokit.repos.createInOrg(
           this._makeConfig(defaultOpts,

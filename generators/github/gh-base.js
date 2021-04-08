@@ -3,7 +3,7 @@ const { Octokit } = require("@octokit/rest");
 
 module.exports = class extends LabsGenerator {
   org = "Lambda-School-Labs";
-  config = {
+  conf = {
     org: this.org,
     defaultRepoOpts: {
       org: this.org,
@@ -24,7 +24,7 @@ module.exports = class extends LabsGenerator {
 
     const ghOpts = { 
       auth: process.env.GITHUBKEY,
-      userAgent: `LambdaLabs-Tools v${exports.pkg.version}`,
+      userAgent: `LambdaLabs-Tools v${this.pkg.version}`,
     };
 
     if (process.env.GHDEBUG == 'true') { ghOpts.log = console; }
