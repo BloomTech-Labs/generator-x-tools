@@ -2,7 +2,7 @@ const LabsGenerator = require("../labs-generator")
 const { Octokit } = require("@octokit/rest");
 
 module.exports = class extends LabsGenerator {
-  org = "Lambda-School-Labs";
+  org = this.ghOrg;
   conf = {
     org: this.org,
     defaultRepoOpts: {
@@ -47,37 +47,6 @@ module.exports = class extends LabsGenerator {
         type: String,
         alias: 'r',
         desc: 'comma list of repo names? (repo1,repo2)',
-      }
-    );
-  }
-  _makeRepoPromptOpt() {
-    this._makePromptOption(
-      'repo',
-      {
-        type: 'input',
-        message: 'What is the name of the repo?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'p',
-        desc: 'name of the repo',
-      }
-    );
-  }
-
-  _makeRepoUrlPromptOpt() {
-    this._makePromptOption(
-      'repoUrl',
-      {
-        type: 'input',
-        message: 'What is the URL of github repo URL (HTTPS git url)?',
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'u',
-        desc: 'URL of git repo URL (HTTPS git url)',
       }
     );
   }

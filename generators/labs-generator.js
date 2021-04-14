@@ -11,6 +11,7 @@ const klr = require('kleur');
 const BaseGenerator = require('@lambdalabs/base-generator');
 
 module.exports = class extends BaseGenerator {
+  ghOrg = "Lambda-School-Labs";
   constructor(args, opts) {
     super(args, opts);
     this._fs = fs;
@@ -74,6 +75,38 @@ module.exports = class extends BaseGenerator {
         type: String,
         alias: 't',
         desc: 'comma list of team slugs? (pt17-cityspire-c,pt17-merchantmarket-a)',
+      }
+    );
+  }
+
+  _makeRepoUrlPromptOpt() {
+    this._makePromptOption(
+      'repoUrl',
+      {
+        type: 'input',
+        message: 'What is the URL of github repo URL (HTTPS git url)?',
+        store: true,
+      },
+      {
+        type: String,
+        alias: 'u',
+        desc: 'URL of git repo URL (HTTPS git url)',
+      }
+    );
+  }
+
+  _makeRepoPromptOpt() {
+    this._makePromptOption(
+      'repo',
+      {
+        type: 'input',
+        message: 'What is the name of the repo?',
+        store: true,
+      },
+      {
+        type: String,
+        alias: 'p',
+        desc: 'name of the repo',
       }
     );
   }
