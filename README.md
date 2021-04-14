@@ -13,7 +13,7 @@ The X Tools provide various functions used through out the org.
 7. `cd generator-x-tools`
 8. `labs ./generators/github/fork-repo`
 
-Each folder in the `github` and `heroku` folders is a tool.
+Each folder in the `github`, `codeclimate` and `heroku` folders is a tool.
 
 ## Fork-repo
 
@@ -23,7 +23,7 @@ Each folder in the `github` and `heroku` folders is a tool.
 
 ``` bash
 Usage:
-  labs ./generators/fork-repo [options]
+  labs ./generators/github/fork-repo [options]
 
 Options:
   -h,   --help           # Print the generator's options and usage
@@ -46,6 +46,22 @@ Options:
 - What is the Labs cohort? (FT32, PT18)
 - What will the repo be used for? [Frontend,Backend,Datascience,iOS]
 
+## codeclimate/create-project
+
+Adds a repo to the Labs [Code Climate](https://codeclimate.com) Org.
+
+**Example Usage**
+
+``` bash
+Usage:
+  labs ./generators/codeclimate/create-project [options]
+```
+
+### Prompts
+
+- What is the name of the repo? (just the slug in the URL)
+
+
 ## Delete-repo
 
 Deletes a repo from the github Labs org.
@@ -54,7 +70,7 @@ Deletes a repo from the github Labs org.
 
 ``` bash
 Usage:
-  labs ./generators/remove-repo [options]
+  labs ./generators/github/remove-repo [options]
 
 Options:
   -h,   --help           # Print the generator's options and usage
@@ -77,7 +93,7 @@ Create N teams for a product
 
 ``` bash
 Usage:
-  labs ./generators/make-teams [options]
+  labs ./generators/github/make-teams [options]
 
 Options:
   -h,   --help           # Print the generator's options and usage
@@ -104,7 +120,7 @@ Delete teams from labs org
 
 ``` bash
 Usage:
-  labs remove-teams [options]
+  labs ./generators/github/remove-teams [options]
 
 Options:
   -h,   --help           # Print the generator's options and usage
@@ -129,7 +145,7 @@ Update team with members, maintainers, and repos
 
 ``` bash
 Usage:
-  labs ./generators/update-teams [options]
+  labs ./generators/github/update-teams [options]
 
 Options:
   -h,   --help           # Print the generator's options and usage
