@@ -10,38 +10,7 @@ module.exports = class extends githubGenerator {
     this._makeProductPromptOpt();
     this._makeTeamCountPromptOpt();
     this._makeCohortPromptOpt();
-    this._makePromptOption(
-      'purpose',
-      {
-        type: 'list',
-        message: 'What will the repo be used for?',
-        choices: [
-          {
-            name: 'Frontend',
-            value: 'fe',
-          },
-          {
-            name: 'Backend',
-            value: 'be',
-          },
-          {
-            name: 'Datascience',
-            value: 'ds',
-          },
-          {
-            name: 'iOS',
-            value: 'ios',
-          },
-        ],
-        store: true,
-      },
-      {
-        type: String,
-        alias: 'r',
-        desc: 'repo purpose',
-        store: true,
-      }
-    );
+    this._makerepoTypePromptOpts();
   }
 
   initializing() {
@@ -75,7 +44,7 @@ module.exports = class extends githubGenerator {
     this.log(`Configuring "Fork" for repo ${this.klr.bold(this.repoName)}`);
     for (var i = 0; i < this.data.teamCount; i++) {
       const letter = String.fromCharCode(97 + i)
-      this.newRepos[letter] = { name: this._makeRepoName(this.data.cohort, this.data.product, letter, this.data.purpose) };
+      this.newRepos[letter] = { name: this._makeRepoName(this.data.cohort, this.data.product, letter, this.data.repoType) };
     }
   }
 

@@ -51,9 +51,9 @@ module.exports = class extends LabsGenerator {
     );
   }
 
-  _makeRepoTypesPromptOpts() {
+  _makerepoTypePromptOpts() {
     this._makePromptOption(
-      'repoTypes',
+      'repoType',
       {
         type: 'checkbox',
         message: 'What type of repos?',

@@ -7,7 +7,7 @@ module.exports = class extends githubGenerator {
     
     this._makeProductPromptOpt();
     this._makeCohortPromptOpt();
-    this._makeRepoTypesPromptOpts();
+    this._makerepoTypePromptOpts();
     this._makeTeamLetterPromptOpt();
   }
 
@@ -30,7 +30,7 @@ module.exports = class extends githubGenerator {
 
   configuring() {
     this.teamSlug = this._makeTeamSlug(this.data.cohort, this.data.product, this.data.letter);
-    this.repos = this.data.repoTypes.map((repoType) => {
+    this.repos = this.data.repoType.map((repoType) => {
       return this._makeRepoName(this.data.cohort, this.data.product, this.data.letter, repoType);
     });
     this.teamConfig = {

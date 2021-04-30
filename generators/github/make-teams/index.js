@@ -30,13 +30,12 @@ module.exports = class extends githubGenerator {
   }
 
   configuring() {
-    for (var i = 0; i < this.data.teams; i++) {
+    for (var i = 0; i < this.data.teamCount; i++) {
       const letter = String.fromCharCode(97 + i)
       this.newTeams[letter] = {
         name: this._makeTeamName(this.data.cohort, this.data.product, letter)
       };
     }
-    // _inspect(this.newTeams);
   }
 
   writing() {
@@ -44,10 +43,12 @@ module.exports = class extends githubGenerator {
   }
 
   installing() {
-    this.log('================\nLets make some teams.');
+    this.log(`================\nLets make ${Object.keys(this.newTeams).length} teams.`);
+    var done = this.async;
     (async () => {
       for (var team in this.newTeams) {
         const name = this.newTeams[team].name;
+        this.log(`================\nCreating team ${name}`)
         // create new team
         const teamObj = await this.octokit.teams.create(
           this._makeConfig({
@@ -57,8 +58,9 @@ module.exports = class extends githubGenerator {
               description: `Labs ${this.data.cohort}, team ${team.toUpperCase()} for project ${this.data.product}`,
             })
         );
-        this.log(`================\nCreated the new github team ${name} (slug: ${teamObj.data.slug}).`);
+        this.log(`Created the new github team ${name} (slug: ${teamObj.data.slug}).`);
       }
+      done();
     })();
   }
 
